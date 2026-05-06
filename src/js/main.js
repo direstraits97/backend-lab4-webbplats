@@ -7,8 +7,9 @@ const menu = document.querySelector("#menu");
 window.onload = init;
 
 function init() {
-  changeMenu();
+  changeMenu(); //Det första som kontrolleras är vilken meny som ska visas för användaren med denna funktion.
 
+  //Beroende på vad som visas på skärmen, alltså vilket formulär som existerar, körs olika funktioner längre ner.
   if (loginForm) {
     loginForm.addEventListener("submit", loginUser);
   }
@@ -18,12 +19,14 @@ function init() {
 }
 
 function changeMenu() {
+  //Om det finns en token att hämta kommer denna meny att visas.
   if (localStorage.getItem("lab4_token")) {
     menu.innerHTML = `
   <li class="firstmenuchoice"><a href="home.html">Hem</a></li>
   <li class="secondmenuchoice"><button id="logoutbutton">Logga ut</button></li>
   `;
   } else {
+    //Om ingen token finns visas denna meny istället.
     menu.innerHTML = `
   <li class="firstmenuchoice"><a href="index.html">Logga in</a></li>
   <li class="secondmenuchoice"><a href="register.html">Registrera konto</a></li>
@@ -32,6 +35,7 @@ function changeMenu() {
 
   const logoutButton = document.querySelector("#logoutbutton");
 
+  //Om en logga-ut-knapp finns, alltså när användaren är inloggad, skapas en eventlyssnare på knappen som tar bort användarens token och omdirigerar till startsidan.
   if (logoutButton) {
     logoutButton.addEventListener("click", () => {
       localStorage.removeItem("lab4_token");
@@ -41,11 +45,12 @@ function changeMenu() {
 }
 
 async function loginUser(e) {
-  e.preventDefault();
+  e.preventDefault(); //Så att formulär inte laddas om.
 
   let usernameInput = document.querySelector("#username").value;
   let passwordInput = document.querySelector("#password").value;
 
+  //Nedan skapas felmeddelande om input-fält är tomma.
   if (usernameInput === "" || passwordInput === "") {
     const errorContainer = document.querySelector(".errorcontainer");
     errorContainer.innerHTML = "";
@@ -56,6 +61,7 @@ async function loginUser(e) {
     errorEl.appendChild(errorText);
     errorContainer.appendChild(errorEl);
   } else {
+    //Om fälten har text görs ett anrop till API:et där input-värden skickas med.
     let user = {
       username: usernameInput,
       password: passwordInput,
@@ -69,12 +75,13 @@ async function loginUser(e) {
         },
         body: JSON.stringify(user),
       });
-
+      //Om allt gått bra sparas token i localStorage och användaren skickas vidare till en skyddad route.
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("lab4_token", data.response.token);
         window.location.href = "home.html";
       } else {
+        //Om svaret inte är en 200-kod kastas felet till catchen där ett nytt felmeddelande skapas. Eftersom API:et svarar med en felkod om ett användarnamn inte finns hamnar vi i catch.
         throw error;
       }
     } catch (error) {
@@ -91,7 +98,7 @@ async function loginUser(e) {
 }
 
 async function createUser(e) {
-  e.preventDefault();
+  e.preventDefault(); //Så att formulär inte laddas om.
 
   let usernameInput = document.querySelector("#username").value;
   let passwordInput = document.querySelector("#password").value;
@@ -104,7 +111,7 @@ async function createUser(e) {
     const errorEl = document.createElement("p");
     const errorText = document.createTextNode(
       "Fyll i både användarnamn och lösenord!",
-    );
+    ); //Likt tidigare kod skapas ett felmeddelande vid tomma input-fält.
     errorEl.appendChild(errorText);
     errorContainer.appendChild(errorEl);
   } else {
@@ -114,6 +121,7 @@ async function createUser(e) {
     };
 
     try {
+      //Vid ifylla fält görs ett anrop till API:et för att lägga till ett konto.
       const response = await fetch("http://localhost:3000/api/register", {
         method: "POST",
         headers: {
@@ -122,6 +130,7 @@ async function createUser(e) {
         body: JSON.stringify(user),
       });
       if (response.status >= 400) {
+        //Om vi får en fel-kod, mer specifikt 409 då en konflikt uppstår över redan existerande konto, kastas felet till catch.
         throw response.status;
       }
       const errorContainer = document.querySelector(".errorcontainer");
@@ -133,6 +142,7 @@ async function createUser(e) {
       confirmEl.appendChild(confirmText);
       confirmContainer.appendChild(confirmEl);
     } catch (error) {
+      //Här nere skapas ett anpassat felmeddelande om upptagna användarnamn.
       const errorContainer = document.querySelector(".errorcontainer");
       errorContainer.innerHTML = "";
       const confirmContainer = document.querySelector(".confirmcontainer");
