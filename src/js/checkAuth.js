@@ -23,9 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const createdContent = document.createTextNode(
       "Ditt konto skapades " + data.data.created.slice(0, 16),
     );
+    const breakEl = document.createElement("br");
     usernameEl.appendChild(usernameContent);
     createdEl.appendChild(createdContent);
     accountEl.appendChild(usernameEl);
+    accountEl.appendChild(breakEl);
     accountEl.appendChild(createdEl);
   } catch (error) {
     localStorage.removeItem("lab4_token");

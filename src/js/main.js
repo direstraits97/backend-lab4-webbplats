@@ -20,13 +20,13 @@ function init() {
 function changeMenu() {
   if (localStorage.getItem("lab4_token")) {
     menu.innerHTML = `
-  <li><a href="home.html">Hem</a></li>
-  <li><button id="logoutbutton">Logga ut</button></li>
+  <li class="firstmenuchoice"><a href="home.html">Hem</a></li>
+  <li class="secondmenuchoice"><button id="logoutbutton">Logga ut</button></li>
   `;
   } else {
     menu.innerHTML = `
-  <li><a href="index.html">Logga in</a></li>
-  <li><a href="register.html">Registrera konto</a></li>
+  <li class="firstmenuchoice"><a href="index.html">Logga in</a></li>
+  <li class="secondmenuchoice"><a href="register.html">Registrera konto</a></li>
   `;
   }
 
