@@ -12,6 +12,9 @@ function init() {
   if (loginForm) {
     loginForm.addEventListener("submit", loginUser);
   }
+  if (registerForm) {
+    registerForm.addEventListener("submit", createUser);
+  }
 }
 
 function changeMenu() {
@@ -43,33 +46,101 @@ async function loginUser(e) {
   let usernameInput = document.querySelector("#username").value;
   let passwordInput = document.querySelector("#password").value;
 
-  if (!usernameInput || !passwordInput) {
-    console.log("Fyll i alla fält!"); //Skriv ut till dom senare
-    return;
-  }
+  if (usernameInput === "" || passwordInput === "") {
+    const errorContainer = document.querySelector(".errorcontainer");
+    errorContainer.innerHTML = "";
+    const errorEl = document.createElement("p");
+    const errorText = document.createTextNode(
+      "Fyll i både användarnamn och lösenord!",
+    );
+    errorEl.appendChild(errorText);
+    errorContainer.appendChild(errorEl);
+  } else {
+    let user = {
+      username: usernameInput,
+      password: passwordInput,
+    };
 
-  let user = {
-    username: usernameInput,
-    password: passwordInput,
-  };
+    try {
+      const response = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
 
-  try {
-    const response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("lab4_token", data.response.token);
-      window.location.href = "home.html";
-    } else {
-      throw error;
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("lab4_token", data.response.token);
+        window.location.href = "home.html";
+      } else {
+        throw error;
+      }
+    } catch (error) {
+      const errorContainer = document.querySelector(".errorcontainer");
+      errorContainer.innerHTML = "";
+      const errorEl = document.createElement("p");
+      const errorText = document.createTextNode(
+        "Felaktigt användarnamn eller lösenord!",
+      );
+      errorEl.appendChild(errorText);
+      errorContainer.appendChild(errorEl);
     }
-  } catch (error) {
-    console.log("Felaktigt användarnamn eller lösenord!"); //Skriv ut till dom senare
+  }
+}
+
+async function createUser(e) {
+  e.preventDefault();
+
+  let usernameInput = document.querySelector("#username").value;
+  let passwordInput = document.querySelector("#password").value;
+
+  if (!usernameInput || !passwordInput) {
+    const errorContainer = document.querySelector(".errorcontainer");
+    const confirmContainer = document.querySelector(".confirmcontainer");
+    errorContainer.innerHTML = "";
+    confirmContainer.innerHTML = "";
+    const errorEl = document.createElement("p");
+    const errorText = document.createTextNode(
+      "Fyll i både användarnamn och lösenord!",
+    );
+    errorEl.appendChild(errorText);
+    errorContainer.appendChild(errorEl);
+  } else {
+    let user = {
+      username: usernameInput,
+      password: passwordInput,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+      if (response.status >= 400) {
+        throw response.status;
+      }
+      const errorContainer = document.querySelector(".errorcontainer");
+      errorContainer.innerHTML = "";
+      const confirmContainer = document.querySelector(".confirmcontainer");
+      confirmContainer.innerHTML = "";
+      const confirmEl = document.createElement("p");
+      const confirmText = document.createTextNode("Nytt konto skapat!");
+      confirmEl.appendChild(confirmText);
+      confirmContainer.appendChild(confirmEl);
+    } catch (error) {
+      const errorContainer = document.querySelector(".errorcontainer");
+      errorContainer.innerHTML = "";
+      const confirmContainer = document.querySelector(".confirmcontainer");
+      confirmContainer.innerHTML = "";
+      const errorEl = document.createElement("p");
+      const errorText = document.createTextNode("Användarnamnet är upptaget!");
+      errorEl.appendChild(errorText);
+      errorContainer.appendChild(errorEl);
+    }
   }
 }

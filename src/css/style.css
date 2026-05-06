@@ -106,3 +106,28 @@ a:hover {
   cursor: pointer;
   text-decoration: underline;
 }
+#accountinfo {
+  background-color: rgb(58, 32, 58);
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2%;
+  border-radius: 10px;
+  margin-top: 100px;
+  margin-bottom: 100px;
+  color: white;
+  box-shadow: 0px 0px 10px black;
+}
+#accountinfo h2 {
+  margin-top: 0;
+}
+.errorcontainer p {
+  background-color: rgb(110, 24, 24);
+  padding: 1em;
+  border-radius: 5px;
+}
+.confirmcontainer p {
+  background-color: rgb(11, 58, 11);
+  padding: 1em;
+  border-radius: 5px;
+}
